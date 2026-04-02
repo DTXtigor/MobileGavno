@@ -1,42 +1,38 @@
 using UnityEngine;
 public class ElevatorPad : IInteractable
 {
-    [SerializeField] private Transform _CamPos;
-    [SerializeField] private Rotation _Rotation;
-
+    private PlayerMove _player;
     private Transform _Camera;
 
-    private Transform playerCamPos;
-    private Transform playerCamRot;
+    [SerializeField] private Transform _CamPos;
+
+    private bool MovingCam;
 
     [SerializeField] private float SpeedMoveCamera;
-    [SerializeField] private float smoothTime = 0.3f;
 
-    private bool isMovingCamera = false;
     override public void PressButton()
     {
         SwitchAllOther(false);
-        isMovingCamera = true;
-        _Camera.SetParent(null);
-        _Rotation.CanMoveCamera = false;
+        _player._InInterface = true;
+        MovingCam = true;
     }
 
     private void Update()
     {
-        if (isMovingCamera)
+        if (MovingCam)
         {
             MoveCamera();
-
-            if (Vector3.Distance(_Camera.position, _CamPos.position) < 0.01f)
+            if (Vector3.Distance(_Camera.position, _CamPos.position) < 0.1f)
             {
-                isMovingCamera = false;
-                IsActive = true;
+                MovingCam = false;
+                SwitchAllNeeded(true);
             }
         }
     }
     private void Start()
     {
         _Camera = Camera.main.transform;
+        _player = FindAnyObjectByType<PlayerMove>();
     }
 
     private void MoveCamera()

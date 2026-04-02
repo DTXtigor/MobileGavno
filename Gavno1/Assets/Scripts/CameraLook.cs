@@ -1,37 +1,28 @@
-using Unity.ProjectAuditor.Editor;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class Rotation : MonoBehaviour, IDragHandler, IEndDragHandler
 {
-    public Vector3 _InputRotation;
-    [SerializeField] private Image _Area;
     [SerializeField] private float SpeedRotation;
 
+    [SerializeField] private Vector3 _InputRotation;
+    private float cameraPitch = 0.0f;
     private Transform _Camera;
-    [HideInInspector] public bool CanMoveCamera = true;
+    private Transform _player;
 
     private void Start()
     {
         _Camera = Camera.main.transform;
+        _player = FindAnyObjectByType<PlayerMove>().transform;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        Vector2 pos;
-        if (!CanMoveCamera) return;
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(_Area.rectTransform, eventData.position, eventData.pressEventCamera, out pos))
-        {
-            pos.x = (pos.x / _Area.rectTransform.sizeDelta.x);
-            pos.y = (pos.y / _Area.rectTransform.sizeDelta.y);
+        _InputRotation = new Vector3(eventData.delta.x, eventData.delta.y, 0) * SpeedRotation;
 
-            _InputRotation = new Vector2(pos.x, pos.y);
-
-            _InputRotation = (_InputRotation.magnitude > 1.0f) ? _InputRotation.normalized : _InputRotation;
-            _Camera.transform.Rotate(Vector3.up, _InputRotation.x * SpeedRotation * Time.deltaTime, Space.World);
-            _Camera.transform.Rotate(Vector3.right, -_InputRotation.y * SpeedRotation * Time.deltaTime, Space.Self);
-        }
+        cameraPitch = Mathf.Clamp(cameraPitch - _InputRotation.y, -90f, 90f);
+        _Camera.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+        _player.Rotate(Vector3.up * _InputRotation.x);      
     }
     public void OnEndDrag(PointerEventData eventData)
     {

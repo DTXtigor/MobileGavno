@@ -3,17 +3,20 @@ using UnityEngine;
 public class Interectively : MonoBehaviour
 {
     private Camera _mainCamera;
+    private PlayerMove _player;
     [SerializeField] private LayerMask _interactableLayerMask;
     [SerializeField] private float _interactionDistance = 2f;
 
     private void Start()
     {
         _mainCamera = Camera.main;
+        _player = GetComponent<PlayerMove>();
     }
 
     void Update()
     {
-        foreach (var interactable in FindObjectsByType<IInteractable>())
+        if (_player._InInterface) return;
+        foreach (IInteractable interactable in FindObjectsByType<IInteractable>())
         {
             interactable.HideButton();
         }
