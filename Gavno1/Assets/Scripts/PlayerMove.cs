@@ -24,14 +24,9 @@ public class PlayerMove : MonoBehaviour
         _joystickMovment = FindAnyObjectByType<JoystickMovment>();
     }
 
-    private void FixedUpdate()
-    {
-        if (_InInterface) return;
-        Move();
-    }
-
     void Update()
     {
+        if (!_InInterface) Move();
         if (MovingCam)
         {
             _camera.position = Vector3.Lerp(_camera.position, CamPos.position, Time.deltaTime * 2);
@@ -46,6 +41,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Move()
     {
+        if (_characterController.enabled)
         _targetVelocity = new Vector3(_joystickMovment._InputVector.x, _joystickMovment._InputVector.y, 0);
         _targetVelocity = transform.right * _targetVelocity.x + transform.forward * _targetVelocity.y;
     

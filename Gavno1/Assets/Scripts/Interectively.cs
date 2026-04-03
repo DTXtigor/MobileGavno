@@ -6,6 +6,7 @@ public class Interectively : MonoBehaviour
     private PlayerMove _player;
     [SerializeField] private LayerMask _interactableLayerMask;
     [SerializeField] private float _interactionDistance = 2f;
+    public GameObject Interect;
 
     private void Start()
     {
@@ -16,6 +17,7 @@ public class Interectively : MonoBehaviour
     void Update()
     {
         if (_player._InInterface) return;
+        Interect = null;
         foreach (IInteractable interactable in FindObjectsByType<IInteractable>())
         {
             interactable.HideButton();
@@ -25,6 +27,7 @@ public class Interectively : MonoBehaviour
         if (Physics.Raycast(ray, out hit, _interactionDistance, _interactableLayerMask))
         {
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            Interect = interactable.gameObject;
             if (interactable != null)
             {
                 interactable.ShowButton();
@@ -38,6 +41,18 @@ public class Interectively : MonoBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawRay(_mainCamera.transform.position, _mainCamera.transform.forward * _interactionDistance);
+        }
+    }
+
+    public void PressButton()
+    {
+        if (Interect != null)
+        {
+            IInteractable interactable = Interect.GetComponent<IInteractable>();
+            if (interactable != null)
+            {
+                interactable.PressButton();
+            }
         }
     }
 }

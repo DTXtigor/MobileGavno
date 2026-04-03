@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 public class Elevator : MonoBehaviour
 {
     private Animator[] _Doors;
@@ -8,7 +9,9 @@ public class Elevator : MonoBehaviour
     [SerializeField] private float _TimeForLevel = 1;
     [SerializeField] private float _ShakeEffect = 1f;
     [SerializeField] private float _TimeForClosingDoors = 1;
-    [SerializeField]private bool InWay = true;
+    [SerializeField] private bool InWay = true;
+    [SerializeField] private float _FloorHeight = 8.4f;
+    public List<Transform> _objects = new List<Transform>();
     private float _TimeShake;
     private void Start()
     {
@@ -17,7 +20,8 @@ public class Elevator : MonoBehaviour
 
     public void ToLevel(int Level)
     {
-        if (Level == _CurrentLevel) return;
+        Debug.Log("To level " + Level);
+        if (Level == _CurrentLevel) { SwitchDoors(true); return; }
         StopAllCoroutines();
 
         _TimeShake = _TimeForLevel * Mathf.Abs(Level - _CurrentLevel);
@@ -49,6 +53,7 @@ public class Elevator : MonoBehaviour
         SwitchDoors(true);
         _CurrentLevel = Level;
         InWay = false;
+        ChangeLevel(Level);
     }
 
     private void SwitchDoors(bool state)
@@ -57,5 +62,15 @@ public class Elevator : MonoBehaviour
         {
             a.SetBool("IsOpen", state);
         }
+    }
+
+    private void ChangeLevel(int floor)
+    {
+        foreach (Transform t in _objects)
+        {
+            t.position = new Vector3(t.position.x, floor * _FloorHeight, t.position.z);
+            Debug.Log("Moving " + t.name + " to floor " + floor);
+        }
+        transform.localPosition = new Vector3(transform.localPosition.x, floor * _FloorHeight, transform.localPosition.z);
     }
 }
