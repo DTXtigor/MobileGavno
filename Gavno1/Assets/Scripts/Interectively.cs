@@ -27,6 +27,7 @@ public class Interectively : MonoBehaviour
         if (Physics.Raycast(ray, out hit, _interactionDistance, _interactableLayerMask))
         {
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            if (interactable == null) interactable = hit.collider.GetComponentInParent<IInteractable>();
             Interect = interactable.gameObject;
             if (interactable != null)
             {
