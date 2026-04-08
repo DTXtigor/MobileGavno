@@ -26,6 +26,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        Debug.Log(Time.timeScale);
         if (!_InInterface) Move();
         if (MovingCam)
         {

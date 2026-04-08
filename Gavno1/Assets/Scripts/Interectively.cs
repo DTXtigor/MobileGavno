@@ -28,7 +28,7 @@ public class Interectively : MonoBehaviour
         {
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
             if (interactable == null) interactable = hit.collider.GetComponentInParent<IInteractable>();
-            Interect = interactable.gameObject;
+            if (interactable != null) Interect = interactable.gameObject;
             if (interactable != null)
             {
                 interactable.ShowButton();
