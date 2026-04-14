@@ -16,7 +16,7 @@ public class StartDialogue : MonoBehaviour
     public void Swap()
     {
         PlayerPrefs.GetInt("Language", 0);
-         if (PlayerPrefs.GetInt("Language", 0) == 0)
+        if (PlayerPrefs.GetInt("Language", 0) == 0)
         {
             _currentLanguage = _english;
         }
@@ -29,8 +29,19 @@ public class StartDialogue : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            _dialogue._currentLanguage = _currentLanguage;
-            _dialogue.StartDialogue();
+            StartsDialogue();
         }
+    }
+
+    private void StartsDialogue()
+    {
+        _dialogue._currentLanguage = _currentLanguage;
+        _dialogue.StartDialogue();
+        _dialogue._startDialogue = this;
+    }
+
+    public virtual void OnEndDialogue()
+    {
+        FindAnyObjectByType<ScenLoader>().ChangeGameStage(true);
     }
 }

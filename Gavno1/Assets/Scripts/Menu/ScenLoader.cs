@@ -12,8 +12,11 @@ public class ScenLoader : MonoBehaviour
     [SerializeField] private TMP_Dropdown _quality;
     [SerializeField] private Slider _joysticSize;
     [SerializeField] private TMP_Dropdown _language;
+    public int GameStage;
+    [SerializeField] private bool SetStage = false;
 
     [SerializeField] public Action Swap;
+    [SerializeField] public Action SwapGameStage;
     public void LoadScene(int i)
     {
         SceneManager.LoadScene(i);
@@ -35,12 +38,24 @@ public class ScenLoader : MonoBehaviour
         Swap?.Invoke();
     }
 
+    public void ChangeGameStage(bool OnHeight)
+    {
+        if (OnHeight) GameStage++;
+        else GameStage--;
+        PlayerPrefs.SetInt("GameStage", GameStage);
+        SwapGameStage?.Invoke();
+        Debug.Log("Changed" + GameStage);
+    }
+
     public void SaveSettings()
     {
         PlayerPrefs.SetInt("Quality", _quality.value);
         PlayerPrefs.SetFloat("Music", _musicValue.value);
         PlayerPrefs.SetFloat("SFX", _sfxValue.value);
         PlayerPrefs.SetFloat("JoysticSize", _joysticSize.value);
+        PlayerPrefs.SetInt("Language", _language.value);
+        PlayerPrefs.SetInt("GameStage", GameStage);
+        PlayerPrefs.Save();
     }
 
     public void LoadSettings()
@@ -56,5 +71,20 @@ public class ScenLoader : MonoBehaviour
     {
         if (pause)Time.timeScale = 0;
         else Time.timeScale = 1;
+    }
+
+    private void Start()
+    {
+        LoadSettings();
+        if (SetStage)
+        {
+            PlayerPrefs.GetInt("GameStage", GameStage);
+        }
+        else
+        {
+            GameStage = PlayerPrefs.GetInt("GameStage", 0);
+
+        }
+        SwapGameStage?.Invoke();
     }
 }

@@ -8,7 +8,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] private float TextSpeed = 0.05f;
     [SerializeField] private float TimeBeginNewLine = 3f;
-
+    [HideInInspector] public StartDialogue _startDialogue;
     [HideInInspector] public string[] _currentLanguage;
 
     private bool _isPrinting = false;
@@ -17,6 +17,7 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private TMP_Text Text;
     private bool _skipped = false;
     private bool Onces = true;
+    
 
     private void Start()
     {
@@ -68,6 +69,8 @@ public class Dialogue : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         {
             _started = false;
             Text.text = string.Empty;
+            _startDialogue.OnEndDialogue();
+            _startDialogue = null;
             yield return null;
         }
         if (_started)

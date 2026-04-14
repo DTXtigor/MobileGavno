@@ -11,23 +11,42 @@ public class Elevator : MonoBehaviour
     [SerializeField] private float _TimeForClosingDoors = 1;
     [SerializeField] private bool InWay = true;
     [SerializeField] private float _FloorHeight = 8.4f;
+
+    [Header("Buttons")]
+    [SerializeField] private Animator[] _Buttons;
+    [SerializeField] private Animator[] _Texts;
+    [SerializeField] private int[] _Stages;
+    [SerializeField] private Material _Active, _Inactive;
+
+
     public List<Transform> _objects = new List<Transform>();
     private float _TimeShake;
-    private void Start()
+    private void Awake()
     {
         _Doors = transform.gameObject.GetComponentsInChildren<Animator>();
+        FindAnyObjectByType<ScenLoader>().SwapGameStage += UpdateButton;
     }
-
     public void ToLevel(int Level)
     {
         Debug.Log("To level " + Level);
-        if (Level == _CurrentLevel) { SwitchDoors(true); return; }
+        _Buttons[Level].SetTrigger("Pressed");
+        _Texts[Level].SetTrigger("Pressed");
+        if (Level == _CurrentLevel) 
+        { 
+            SwitchDoors(true);
+            StopAllCoroutines();
+            return;
+        }
+        
         StopAllCoroutines();
+        if (PlayerPrefs.GetInt("GameStage") < _Stages[Level]) return;
 
         _TimeShake = _TimeForLevel * Mathf.Abs(Level - _CurrentLevel);
 
         StartCoroutine(ShakeElevator(Level));
-        SwitchDoors(false);      
+        SwitchDoors(false);
+
+
     }
 
 
@@ -56,11 +75,19 @@ public class Elevator : MonoBehaviour
         ChangeLevel(Level);
     }
 
+    private void UpdateButton()
+    {
+        for (int i = 0; i < _Buttons.Length; i++)
+        {
+            if (PlayerPrefs.GetInt("GameStage", 0) >= _Stages[i]) _Buttons[i].GetComponent<Renderer>().material = _Active;
+            else _Buttons[i].GetComponent<Renderer>().material = _Inactive;
+        }
+    }
     private void SwitchDoors(bool state)
     {
         foreach (Animator a in _Doors)
         {
-            a.SetBool("IsOpen", state);
+            if (a.CompareTag("Door"))a.SetBool("IsOpen", state);
         }
     }
 

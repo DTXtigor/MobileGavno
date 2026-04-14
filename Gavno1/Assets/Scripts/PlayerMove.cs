@@ -16,6 +16,7 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] private float _sensivity;
     [HideInInspector] public bool _InInterface = false;
+    [SerializeField] private float forceMultiplier = 5f;    
 
     void Start()
     {
@@ -26,7 +27,6 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(Time.timeScale);
         if (!_InInterface) Move();
         if (MovingCam)
         {
@@ -56,5 +56,17 @@ public class PlayerMove : MonoBehaviour
         {
             item.SetActive(true);
         }
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Rigidbody body = hit.collider.attachedRigidbody;
+
+        if (body == null || body.isKinematic) return;
+
+        if (hit.moveDirection.y < -0.3f) return;
+
+        Vector3 pushDir = new Vector3(hit.moveDirection.x, 0, hit.moveDirection.z);
+        body.linearVelocity = pushDir * forceMultiplier;
     }
 }
