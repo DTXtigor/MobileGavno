@@ -1,0 +1,102 @@
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.Events;
+using System;
+using UnityEngine.InputSystem;
+
+public class ScenLoader : MonoBehaviour
+{
+    [SerializeField] private Slider _sfxValue;
+    [SerializeField] private Slider _musicValue;
+    [SerializeField] private TMP_Dropdown _quality;
+    [SerializeField] private Slider _joysticSize;
+    [SerializeField] private TMP_Dropdown _language;
+    public int GameStage;
+    [SerializeField] private bool SetStage = false;
+    [SerializeField] private int SetStageValue = 0;
+
+    [SerializeField] public Action Swap;
+    [SerializeField] public Action SwapGameStage;
+    public void LoadScene(int i)
+    {
+        SceneManager.LoadScene(i);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public void ChangeQuality(int Quality)
+    {
+        QualitySettings.SetQualityLevel(Quality);
+    }
+
+    public void ChangeLanguage(int Lang)
+    {
+        PlayerPrefs.SetInt("Language", Lang);
+        Swap?.Invoke();
+    }
+
+    public void ChangeGameStage(bool OnHeight)
+    {
+        if (OnHeight) GameStage++;
+        else GameStage--;
+        PlayerPrefs.SetInt("GameStage", GameStage);
+        SwapGameStage?.Invoke();
+        Debug.Log("Changed" + GameStage);
+    }
+
+    public void SaveSettings()
+    {
+        PlayerPrefs.SetInt("Quality", _quality.value);
+        PlayerPrefs.SetFloat("Music", _musicValue.value);
+        PlayerPrefs.SetFloat("SFX", _sfxValue.value);
+        PlayerPrefs.SetFloat("JoysticSize", _joysticSize.value);
+        PlayerPrefs.SetInt("Language", _language.value);
+        PlayerPrefs.Save();
+    }
+
+    public void ResetAll()
+    {
+        PlayerPrefs.DeleteAll();
+        FindAnyObjectByType<ScenLoader>().SaveSettings();
+    }
+
+    public void LoadSettings()
+    {
+        _quality.value = PlayerPrefs.GetInt("Quality", 1);
+        _musicValue.value = PlayerPrefs.GetFloat("Music", 1f);
+        _sfxValue.value = PlayerPrefs.GetFloat("SFX", 1f);
+        _joysticSize.value = PlayerPrefs.GetFloat("JoysticSize", 0.5f);
+        _language.value = PlayerPrefs.GetInt("Language", 0);
+    }
+
+    public void OnApplicationPause(bool pause)
+    {
+        if (pause)Time.timeScale = 0;
+        else Time.timeScale = 1;
+    }
+
+    private void Start()
+    {
+        LoadSettings();
+        if (SetStage)
+        {
+            GameStage = SetStageValue;
+            PlayerPrefs.SetInt("GameStage", GameStage);
+        }
+        else
+        {
+            GameStage = PlayerPrefs.GetInt("GameStage", 0);
+
+        }
+        PlayerPrefs.Save();
+        SwapGameStage?.Invoke();
+
+        Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0;
+    }
+}

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - AreaButton
   - Door
+  - PlayerArm
+  - Key
+  - Plunger
   layers:
   - Default
   - TransparentFX
@@ -16,9 +19,9 @@ TagManager:
   - Interaciveible
   - "\u0421eiling"
   - Physics
-  - 
-  - 
-  - 
+  - NoLightning
+  - Shape
+  - NoCamera
   - 
   - 
   - 
